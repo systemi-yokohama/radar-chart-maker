@@ -184,15 +184,3 @@ function createRadarChart () {
     s.getRange(1, 1, rows.length).setValues(rows)
   }
 }
-
-// eslint-disable-next-line no-unused-vars
-function debug (...argv) {
-  const ss = SpreadsheetApp.getActive()
-  const s = ss.getSheetByName('デバッグログ')
-  if (s) {
-    s.appendRow([
-      new Date().toISOString(),
-      argv.reduce((prev, cur) => `${prev} ${typeof cur === 'string' ? cur : JSON.stringify(cur)}`)
-    ])
-  }
-}
