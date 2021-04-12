@@ -16,23 +16,6 @@ function onOpen () {
 }
 
 /**
- * 指定されたファイルに対してスプレッドシートの「編集者」シートに記載されている編集者をまとめて追加する。
- *
- * @param {Object} GAS のファイルオブジェクト
- */
-function addEditors (file) {
-  const emailAddresses = SpreadsheetApp.getActiveSpreadsheet()
-    .getSheetByName('編集者')
-    .getDataRange()
-    .getValues()
-    .filter(row => row[0] !== '')
-    .map(row => row[0])
-  if (emailAddresses.length !== 0) {
-    file.addEditors(emailAddresses)
-  }
-}
-
-/**
  * ハイパーリンク文字列を作成する。
  *
  * @param {String} title タイトル
@@ -40,6 +23,17 @@ function addEditors (file) {
  * @returns {String} ハイパーリンク文字列
  */
 const makeLinkString = (title, url) => `=HYPERLINK("${url}","${title}")`
+
+/**
+ * フォルダ ID を取得する。
+ *
+ * @returns {String} フォルダ ID
+ */
+const getFolderId = () => SpreadsheetApp.getActiveSpreadsheet()
+  .getSheetByName('変数')
+  .getDataRange()
+  .getValues()
+  .filter(row => row[0] === 'フォルダ ID')[0][1]
 
 /**
  * 新しく作成したスプレッドシートにレーダーチャートのシートを追加する。
@@ -71,10 +65,7 @@ function create (header, categories, record) {
   // 新しいスプレッドシートを作成
   const ss = SpreadsheetApp.create(spreadSheetName)
   const file = DriveApp.getFileById(ss.getId())
-  addEditors(file)
-  const folderName = 'スキルチェックシート'
-  const folders = DriveApp.getFoldersByName(folderName)
-  const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName)
+  const folder = DriveApp.getFolderById(getFolderId())
   file.moveTo(folder)
   const s = ss.getActiveSheet()
   s.getRange(1, 1, values.length, values[0].length).setValues(values)
